@@ -196,42 +196,52 @@ body {
     max-width: 250px;
     border-radius: 10px;
 }
-/* --- Mobile Responsive Settings (UPDATED) --- */
+/* --- Final Mobile Fix (HTML ke hisaab se) --- */
 @media (max-width: 600px) {
-    body {
+    body, html {
         margin: 0;
         padding: 0;
+        height: 100% !important;
+        width: 100% !important;
         overflow: hidden;
-        height: 100%;
     }
 
-    /* .chat-container ki jagah .chat-wrapper use karo */
+    /* .chat-wrapper aapka main container hai */
     .chat-wrapper {
-        width: 100vw;
-        height: 100vh;
-        border-radius: 0;
-        display: flex;
-        flex-direction: column;
+        width: 100vw !important;
+        height: 100vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        border-radius: 0 !important;
     }
 
-    /* .messages-area ki jagah .chat-box use karo kyunki upar wahi define hai */
-    .chat-box {
-        flex: 1; 
-        overflow-y: auto;
-        padding: 15px;
-    }
-
-    /* .input-area ki jagah .chat-footer use karo */
-    .chat-footer {
-        padding: 10px;
-        background: #fff;
-    }
-
-    .message {
-        max-width: 85%; /* Mobile par bubble bada dikhega */
+    /* .chat-header ko chota karne ke liye */
+    .chat-header {
+        padding: 10px 15px !important;
     }
 
     .partner-title {
-        font-size: 20px;
+        font-size: 20px !important;
+    }
+
+    /* .chat-box ko bachi hui puri screen dene ke liye */
+    .chat-box {
+        flex: 1 !important; 
+        overflow-y: auto !important;
+        padding: 10px !important;
+    }
+
+    /* .chat-footer (input area) niche chipka rahega */
+    .chat-footer {
+        padding: 8px 12px !important;
+        background: #fff !important;
+    }
+
+    #msg-input {
+        padding: 10px 15px !important;
+    }
+
+    .message {
+        max-width: 85% !important;
     }
 }
