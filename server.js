@@ -47,24 +47,24 @@ let lastSeen = {};
 let userSocketMap = {}; // 🔥 IMPORTANT FIX
 
 // ================= SOCKET =================
-// Is block ko replace karo jahan io define kiya hai
+// 1. Pehle saare 'require' statements honge (express, http, mongoose wagera)
+const express = require('express');
+const http = require('http');
+// ... baaki imports
+
+// 2. Phir 'io' ka declaration sirf EK BAAR aise hoga:
 const io = require("socket.io")(server, {
-  maxHttpBufferSize: 1e8, // 100MB limit: Mobile photos ke liye zaroori hai
+  maxHttpBufferSize: 1e8, 
   cors: {
     origin: "*",
     methods: ["GET", "POST"]
   }
 });
 
-// Iske niche aapka purana code chalta rahega...
+// 3. Phir iske niche aapka connection logic:
 io.on("connection", async (socket) => {
   console.log("User Connected:", socket.id);
-  
-  // LOAD CHAT
-  const messages = await Message.find().sort({ createdAt: 1 });
-  socket.emit("loadMessages", messages);
-  
-  // ... baaki ka code yahan rahega
+  // ... baaki chat ka code
 });
 
   // ================= USER ONLINE =================
