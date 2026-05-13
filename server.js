@@ -111,12 +111,17 @@ io.on("connection", async (socket) => {
     msg.seen = true;
     msg.seenAt = new Date();
     await msg.save();
-    io.emit("messageSeenUpdate", { 
-      messageId: data.messageId, 
-      time: msg.seenAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
-    });
-  });
 
+    // SERVER US MEIN HAI, PAR TIME INDIA KA BHEJEGA
+    const indianTime = msg.seenAt.toLocaleTimeString('en-IN', {
+        timeZone: 'Asia/Kolkata', // <--- Bas ye line magic karegi
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+
+    io.emit("messageSeenUpdate", { messageId: data.messageId, time: indianTime });
+});
   // ================= CALL SYSTEM =================
   socket.on("audioCall", (data) => {
     const targetSocket = userSocketMap[data.to];
