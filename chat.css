@@ -196,3 +196,29 @@ body {
     max-width: 250px;
     border-radius: 10px;
 }
+/* Mobile Responsive Settings */
+@media (max-width: 600px) {
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden; /* Screen shake na kare */
+    }
+
+    .chat-container {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0; /* Mobile par rounded corners ki zaroorat nahi */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .messages-area {
+        flex: 1; /* Ye area bachi hui puri screen le lega */
+        overflow-y: auto;
+    }
+
+    .input-area {
+        padding: 10px;
+        background: #fff;
+    }
+}
