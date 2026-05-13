@@ -189,26 +189,45 @@ if (videoCallBtn) {
     });
 }
 
-// ================= FILE UPLOAD =================
+// ================= FILE UPLOAD (MOBILE FIX) =================
 fileInput.addEventListener("change", (e) => {
-
     const file = e.target.files[0];
     if (!file) return;
 
+    // Mobile par badi files allow karne ke liye
+    if (file.size > 10 * 1024 * 1024) { // 10MB Limit
+        alert("File bahut badi hai! 10MB se choti photo bhejein.");
+        return;
+    }
+
     const reader = new FileReader();
 
-    reader.onload = (event) => {
+    // Loading indicator dikhane ke liye (optional)
+    typingDiv.innerText = "Sending photo...";
 
-        socket.emit("sendMessage", {
-            id: Date.now().toString(),
-            sender: me,
-            text: "",
-            file: event.target.result
-        });
+    reader.onload = (event) => {
+        try {
+            socket.emit("sendMessage", {
+                id: Date.now().toString(),
+                sender: me,
+                text: "",
+                file: event.target.result // Base64 Data
+            });
+            typingDiv.innerText = "";
+            fileInput.value = ""; // Input reset taaki same photo dubara ja sake
+        } catch (err) {
+            console.error("Socket error:", err);
+            alert("Connection error! Photo nahi gayi.");
+        }
+    };
+
+    reader.onerror = () => {
+        alert("Mobile gallery se photo read nahi ho payi.");
     };
 
     reader.readAsDataURL(file);
 });
+
 
 // ================= CALL POPUP =================
 function showCallPopup(text) {
