@@ -47,11 +47,6 @@ let lastSeen = {};
 let userSocketMap = {}; // 🔥 IMPORTANT FIX
 
 // ================= SOCKET =================
-// 1. Pehle saare 'require' statements honge (express, http, mongoose wagera)
-const express = require('express');
-const http = require('http');
-// ... baaki imports
-
 // 2. Phir 'io' ka declaration sirf EK BAAR aise hoga:
 const io = require("socket.io")(server, {
   maxHttpBufferSize: 1e8, 
