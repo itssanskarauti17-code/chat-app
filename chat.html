@@ -116,6 +116,20 @@
   window.addEventListener('resize', adjustHeight);
   window.addEventListener('orientationchange', adjustHeight);
   adjustHeight();
+  
+</script>
+<script>
+  // Click on any image in chat to open it
+  document.getElementById('chat-box').addEventListener('click', function(e) {
+    if (e.target.tagName === 'IMG') {
+      window.open(e.target.src, '_blank');
+    }
+  });
+
+  // Cursor change for images
+  const style = document.createElement('style');
+  style.innerHTML = '#chat-box img { cursor: zoom-in; }';
+  document.head.appendChild(style);
 </script>
 </body>
  
