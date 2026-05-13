@@ -1,4 +1,4 @@
-const socket = io();
+
 const peer = new Peer(); 
 let localStream;
 let currentCall; // Call tracks rakhne ke liye
