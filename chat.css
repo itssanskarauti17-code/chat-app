@@ -75,16 +75,29 @@ body {
     gap: 10px;
 }
 
+/* --- MESSAGE BUBBLES --- */
 .message {
     max-width: 65%;
-    padding: 10px 16px;
-    border-radius: 15px;
+    padding: 8px; /* Padding kam ki taaki image fit dikhe */
+    border-radius: 12px;
     font-size: 15px;
     box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    position: relative;
 }
 
 .sent { align-self: flex-end; background-color: #dcf8c6; border-top-right-radius: 0; }
 .received { align-self: flex-start; background-color: #ffffff; border-top-left-radius: 0; }
+
+/* 🔥 IMAGE SIZE FIX (Yahan hai fix) 🔥 */
+.chat-image {
+    max-width: 200px; /* Chat mein image itni hi badi dikhegi */
+    max-height: 300px;
+    border-radius: 8px;
+    display: block;
+    cursor: pointer;
+    object-fit: cover;
+    margin: 2px;
+}
 
 /* --- Footer --- */
 .chat-footer {
@@ -113,9 +126,9 @@ body {
     transition: 0.2s;
 }
 
-/* ================= VIDEO CALL OVERLAY (NEW FIX) ================= */
+/* ================= VIDEO CALL OVERLAY ================= */
 #video-grid {
-    display: none; /* JS isey flex kar dega */
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -193,4 +206,5 @@ body {
     .chat-wrapper { height: calc(var(--vh, 1vh) * 100) !important; }
     #local-video { width: 90px; height: 120px; top: 10px; right: 10px; }
     .call-popup { width: 90%; left: 5%; right: 5%; }
+    .chat-image { max-width: 160px; } /* Mobile par thodi aur chhoti */
 }

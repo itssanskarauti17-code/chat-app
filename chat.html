@@ -48,6 +48,42 @@
             cursor: pointer;
             z-index: 10000;
         }
+
+        /* 🔥 FIX 1: Chat Image Size Control 🔥 */
+        #chat-box img { 
+            max-width: 200px; 
+            max-height: 250px; 
+            border-radius: 10px; 
+            margin: 5px 0;
+            display: block;
+            cursor: zoom-in;
+            object-fit: cover;
+            transition: transform 0.2s;
+        }
+
+        /* 🔥 FIX 2: Image Modal (Pop-up) Styling 🔥 */
+        .img-modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-out;
+            animation: fadeIn 0.3s ease;
+        }
+        .img-modal img {
+            max-width: 95% !important;
+            max-height: 95% !important;
+            border-radius: 5px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.5);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -136,17 +172,22 @@
   window.addEventListener('orientationchange', adjustHeight);
   adjustHeight();
 
-  // Click on any image in chat to open it
+  // 🔥 FIX 3: WhatsApp Style Modal Logic 🔥
   document.getElementById('chat-box').addEventListener('click', function(e) {
     if (e.target.tagName === 'IMG') {
-      window.open(e.target.src, '_blank');
+        // Purana window.open hata kar ye banaya hai
+        const modal = document.createElement('div');
+        modal.className = 'img-modal';
+        modal.innerHTML = `<img src="${e.target.src}">`;
+        
+        // Modal ko band karne ke liye logic
+        modal.onclick = function() {
+            modal.remove();
+        };
+        
+        document.body.appendChild(modal);
     }
   });
-
-  // Cursor change for images
-  const style = document.createElement('style');
-  style.innerHTML = '#chat-box img { cursor: zoom-in; }';
-  document.head.appendChild(style);
 </script>
 </body>
 </html>
