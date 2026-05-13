@@ -19,10 +19,10 @@ body {
     flex-direction: column;
 }
 
-/* --- Green Header with Bold Name --- */
+/* --- Green Header --- */
 .chat-header {
     padding: 12px 25px;
-    background-color: #075E54; /* Dark WhatsApp Green */
+    background-color: #075E54;
     color: white;
     display: flex;
     justify-content: space-between;
@@ -32,7 +32,7 @@ body {
 }
 
 .partner-title {
-    font-size: 24px; /* Bada Bold Name */
+    font-size: 24px;
     font-weight: 700;
     letter-spacing: 0.3px;
 }
@@ -44,7 +44,7 @@ body {
     margin-top: -2px;
 }
 
-/* Call Buttons (White with Green Icons) */
+/* Call Buttons */
 .header-actions {
     display: flex;
     gap: 15px;
@@ -69,13 +69,12 @@ body {
     flex: 1;
     padding: 20px;
     overflow-y: auto;
-    background-color: #e5ddd5; /* WhatsApp Chat Background */
+    background-color: #e5ddd5;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-/* Bubbles */
 .message {
     max-width: 65%;
     padding: 10px 16px;
@@ -87,7 +86,7 @@ body {
 .sent { align-self: flex-end; background-color: #dcf8c6; border-top-right-radius: 0; }
 .received { align-self: flex-start; background-color: #ffffff; border-top-left-radius: 0; }
 
-/* --- Footer Layout (Instagram Style) --- */
+/* --- Footer --- */
 .chat-footer {
     padding: 10px 20px;
     background: #ffffff;
@@ -97,7 +96,6 @@ body {
     gap: 12px;
 }
 
-/* Input Field */
 #msg-input {
     flex: 1;
     border: none;
@@ -108,13 +106,6 @@ body {
     outline: none;
 }
 
-/* Actions Right */
-.right-actions {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
 .icon-btn, .insta-send {
     cursor: pointer;
     display: flex;
@@ -122,117 +113,84 @@ body {
     transition: 0.2s;
 }
 
-.insta-send:hover { transform: scale(1.1); }
-
-/* --- Responsiveness --- */
-@media (max-width: 600px) {
-    .partner-title { font-size: 20px; }
-    .chat-header, .chat-footer { padding: 10px 15px; }
-    .message { max-width: 85%; }
+/* ================= VIDEO CALL OVERLAY (NEW FIX) ================= */
+#video-grid {
+    display: none; /* JS isey flex kar dega */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    z-index: 9999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Full screen adjustment for wide laptops */
-@media (min-width: 1200px) {
-    .chat-box, .chat-footer, .chat-header {
-        padding-left: 15%;
-        padding-right: 15%;
-    }
+#remote-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
+
+#local-video {
+    width: 120px;
+    height: 160px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    border: 2px solid #fff;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #222;
+    z-index: 10000;
+}
+
+.end-call-btn {
+    position: absolute;
+    bottom: 50px;
+    background: #ff3b30;
+    color: #fff;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    z-index: 10001;
+}
+
 /* ================= CALL POPUP ================= */
 .call-popup {
     display: none;
     position: fixed;
     top: 20px;
     right: 20px;
-    width: 220px;
-    background: #111;
+    width: 250px;
+    background: #1c1c1e;
     color: #fff;
-    padding: 15px;
-    border-radius: 12px;
-    z-index: 9999;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-}
-
-.call-popup p {
-    margin: 0;
-    font-size: 14px;
-    text-align: center;
+    padding: 20px;
+    border-radius: 15px;
+    z-index: 10002;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid #333;
 }
 
 .call-actions {
     display: flex;
     justify-content: space-between;
-    margin-top: 12px;
+    margin-top: 15px;
 }
 
-.accept-btn {
-    background: #25D366;
-    color: white;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-}
+.accept-btn { background: #34c759; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+.reject-btn { background: #ff3b30; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-.reject-btn {
-    background: #ff3b30;
-    color: white;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.accept-btn:hover,
-.reject-btn:hover {
-    opacity: 0.8;
-}
-.chat-image {
-    max-width: 200px;
-    border-radius: 10px;
-}
-
-.chat-video {
-    max-width: 250px;
-    border-radius: 10px;
-}
-/* --- Updated Mobile Fix --- */
+/* --- Mobile Fix --- */
 @media (max-width: 600px) {
-    body, html {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        width: 100%;
-        overflow: hidden;
-        position: fixed; /* Screen ko hilne se rokne ke liye */
-    }
-
-    .chat-wrapper {
-        width: 100vw !important;
-        /* Mobile browser height fix */
-        height: 100vh !important; 
-        height: calc(var(--vh, 1vh) * 100) !important;
-        display: flex !important;
-        flex-direction: column !important;
-        border-radius: 0 !important;
-    }
-
-    .chat-box {
-        flex: 1 !important; 
-        overflow-y: auto !important;
-        padding: 10px !important;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .chat-footer {
-        padding: 8px 12px !important;
-        background: #fff !important;
-        position: relative; /* Visibility fix */
-        padding-bottom: env(safe-area-inset-bottom) !important; /* iPhone fix */
-    }
-
-    .chat-header { padding: 10px 15px !important; }
-    .partner-title { font-size: 20px !important; }
-    #msg-input { padding: 10px 15px !important; }
-    .message { max-width: 85% !important; }
+    body, html { position: fixed; }
+    .chat-wrapper { height: calc(var(--vh, 1vh) * 100) !important; }
+    #local-video { width: 90px; height: 120px; top: 10px; right: 10px; }
+    .call-popup { width: 90%; left: 5%; right: 5%; }
 }
