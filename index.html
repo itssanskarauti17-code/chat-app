@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Chat Login</title>
+
+    <!-- CSS File -->
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+    <div class="login-container">
+
+        <div class="login-box">
+
+            <h1>Welcome Back</h1>
+            <p class="subtitle">
+                Login to your private chat
+            </p>
+
+            <form id="loginForm">
+
+                <div class="input-group">
+                    <label>Username</label>
+                    <input 
+                        type="text" 
+                        id="username"
+                        placeholder="Enter username"
+                        required
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+                    <input 
+                        type="password"
+                        id="password"
+                        placeholder="Enter password"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="login-btn">
+                    Login
+                </button>
+
+            </form>
+
+            <div class="login-info">
+                <p>
+                    Only authorized users can access
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- JS File -->
+    <script src="login.js"></script>
+
+</body>
+</html>

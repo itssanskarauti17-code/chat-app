@@ -1,0 +1,198 @@
+/* --- Base Styles --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: #fff;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.chat-wrapper {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Green Header with Bold Name --- */
+.chat-header {
+    padding: 12px 25px;
+    background-color: #075E54; /* Dark WhatsApp Green */
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+.partner-title {
+    font-size: 24px; /* Bada Bold Name */
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.status {
+    font-size: 13px;
+    display: block;
+    color: #e0e0e0;
+    margin-top: -2px;
+}
+
+/* Call Buttons (White with Green Icons) */
+.header-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.call-btn {
+    width: 38px;
+    height: 38px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.call-btn:hover { transform: scale(1.1); }
+
+/* --- Chat Area --- */
+.chat-box {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #e5ddd5; /* WhatsApp Chat Background */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Bubbles */
+.message {
+    max-width: 65%;
+    padding: 10px 16px;
+    border-radius: 15px;
+    font-size: 15px;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+
+.sent { align-self: flex-end; background-color: #dcf8c6; border-top-right-radius: 0; }
+.received { align-self: flex-start; background-color: #ffffff; border-top-left-radius: 0; }
+
+/* --- Footer Layout (Instagram Style) --- */
+.chat-footer {
+    padding: 10px 20px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #efefef;
+    gap: 12px;
+}
+
+/* Input Field */
+#msg-input {
+    flex: 1;
+    border: none;
+    background: #f2f2f2;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-size: 15px;
+    outline: none;
+}
+
+/* Actions Right */
+.right-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.icon-btn, .insta-send {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: 0.2s;
+}
+
+.insta-send:hover { transform: scale(1.1); }
+
+/* --- Responsiveness --- */
+@media (max-width: 600px) {
+    .partner-title { font-size: 20px; }
+    .chat-header, .chat-footer { padding: 10px 15px; }
+    .message { max-width: 85%; }
+}
+
+/* Full screen adjustment for wide laptops */
+@media (min-width: 1200px) {
+    .chat-box, .chat-footer, .chat-header {
+        padding-left: 15%;
+        padding-right: 15%;
+    }
+}
+/* ================= CALL POPUP ================= */
+.call-popup {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 220px;
+    background: #111;
+    color: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    z-index: 9999;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.call-popup p {
+    margin: 0;
+    font-size: 14px;
+    text-align: center;
+}
+
+.call-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+}
+
+.accept-btn {
+    background: #25D366;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.reject-btn {
+    background: #ff3b30;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.accept-btn:hover,
+.reject-btn:hover {
+    opacity: 0.8;
+}
+.chat-image {
+    max-width: 200px;
+    border-radius: 10px;
+}
+
+.chat-video {
+    max-width: 250px;
+    border-radius: 10px;
+}
