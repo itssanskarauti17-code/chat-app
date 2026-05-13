@@ -60,7 +60,7 @@ let userSocketMap = {}; // 🔥 IMPORTANT FIX
 io.on("connection", async (socket) => {
   console.log("User Connected:", socket.id);
   // ... baaki chat ka code
-});
+
 
   // ================= USER ONLINE =================
   socket.on("userOnline", (username) => {
@@ -144,7 +144,7 @@ io.on("connection", async (socket) => {
 
     io.emit("onlineUsers", { onlineUsers, lastSeen });
   });
-
+});
 // ================= AUTO DELETE =================
 setInterval(async () => {
   const tenMinAgo = new Date(Date.now() - 10 * 60 * 1000);
