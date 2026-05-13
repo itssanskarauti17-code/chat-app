@@ -196,52 +196,43 @@ body {
     max-width: 250px;
     border-radius: 10px;
 }
-/* --- Final Mobile Fix (HTML ke hisaab se) --- */
+/* --- Updated Mobile Fix --- */
 @media (max-width: 600px) {
     body, html {
         margin: 0;
         padding: 0;
-        height: 100% !important;
-        width: 100% !important;
+        height: 100%;
+        width: 100%;
         overflow: hidden;
+        position: fixed; /* Screen ko hilne se rokne ke liye */
     }
 
-    /* .chat-wrapper aapka main container hai */
     .chat-wrapper {
         width: 100vw !important;
-        height: 100vh !important;
+        /* Mobile browser height fix */
+        height: 100vh !important; 
+        height: calc(var(--vh, 1vh) * 100) !important;
         display: flex !important;
         flex-direction: column !important;
         border-radius: 0 !important;
     }
 
-    /* .chat-header ko chota karne ke liye */
-    .chat-header {
-        padding: 10px 15px !important;
-    }
-
-    .partner-title {
-        font-size: 20px !important;
-    }
-
-    /* .chat-box ko bachi hui puri screen dene ke liye */
     .chat-box {
         flex: 1 !important; 
         overflow-y: auto !important;
         padding: 10px !important;
+        -webkit-overflow-scrolling: touch;
     }
 
-    /* .chat-footer (input area) niche chipka rahega */
     .chat-footer {
         padding: 8px 12px !important;
         background: #fff !important;
+        position: relative; /* Visibility fix */
+        padding-bottom: env(safe-area-inset-bottom) !important; /* iPhone fix */
     }
 
-    #msg-input {
-        padding: 10px 15px !important;
-    }
-
-    .message {
-        max-width: 85% !important;
-    }
+    .chat-header { padding: 10px 15px !important; }
+    .partner-title { font-size: 20px !important; }
+    #msg-input { padding: 10px 15px !important; }
+    .message { max-width: 85% !important; }
 }
