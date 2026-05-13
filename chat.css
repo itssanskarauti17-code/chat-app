@@ -196,29 +196,42 @@ body {
     max-width: 250px;
     border-radius: 10px;
 }
-/* Mobile Responsive Settings */
+/* --- Mobile Responsive Settings (UPDATED) --- */
 @media (max-width: 600px) {
     body {
         margin: 0;
         padding: 0;
-        overflow: hidden; /* Screen shake na kare */
+        overflow: hidden;
+        height: 100%;
     }
 
-    .chat-container {
+    /* .chat-container ki jagah .chat-wrapper use karo */
+    .chat-wrapper {
         width: 100vw;
         height: 100vh;
-        border-radius: 0; /* Mobile par rounded corners ki zaroorat nahi */
+        border-radius: 0;
         display: flex;
         flex-direction: column;
     }
 
-    .messages-area {
-        flex: 1; /* Ye area bachi hui puri screen le lega */
+    /* .messages-area ki jagah .chat-box use karo kyunki upar wahi define hai */
+    .chat-box {
+        flex: 1; 
         overflow-y: auto;
+        padding: 15px;
     }
 
-    .input-area {
+    /* .input-area ki jagah .chat-footer use karo */
+    .chat-footer {
         padding: 10px;
         background: #fff;
+    }
+
+    .message {
+        max-width: 85%; /* Mobile par bubble bada dikhega */
+    }
+
+    .partner-title {
+        font-size: 20px;
     }
 }
