@@ -1,12 +1,21 @@
 const express = require("express");
 const http = require("http");
-const { Server } = require("socket.io");
+const { Server } = require("socket.io"); // Socket.io class import ki
 const mongoose = require("mongoose");
 const path = require("path");
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+
+// YAHAN FIX HAI: 'io' ko ek hi baar declare kiya settings ke saath
+const io = new Server(server, {
+  maxHttpBufferSize: 1e8, // 100MB limit (Mobile photo fix)
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
 const PORT = process.env.PORT || 3001;
 
 // ================= DB =================
@@ -47,15 +56,6 @@ let lastSeen = {};
 let userSocketMap = {}; // 🔥 IMPORTANT FIX
 
 // ================= SOCKET =================
-// 2. Phir 'io' ka declaration sirf EK BAAR aise hoga:
-const io = require("socket.io")(server, {
-  maxHttpBufferSize: 1e8, 
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
-});
-
 // 3. Phir iske niche aapka connection logic:
 io.on("connection", async (socket) => {
   console.log("User Connected:", socket.id);
