@@ -144,7 +144,6 @@ io.on("connection", async (socket) => {
 
     io.emit("onlineUsers", { onlineUsers, lastSeen });
   });
-});
 
 // ================= AUTO DELETE =================
 setInterval(async () => {
