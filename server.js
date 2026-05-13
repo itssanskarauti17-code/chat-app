@@ -28,6 +28,7 @@ mongoose.connect(dbURI, { serverSelectionTimeoutMS: 5000, family: 4 })
 const MessageSchema = new mongoose.Schema({
   id: String,
   sender: String,
+  receiver: String, // Added for better filtering
   text: String,
   file: String,
   seen: { type: Boolean, default: false },
@@ -46,7 +47,7 @@ app.get("/", (req, res) => {
 let onlineUsers = {};
 let lastSeen = {};
 let userSocketMap = {}; 
-let userPeerMap = {}; // 🔥 NEW: Peer IDs store karne ke liye
+let userPeerMap = {}; 
 
 // ================= SOCKET =================
 io.on("connection", async (socket) => {
@@ -62,7 +63,23 @@ io.on("connection", async (socket) => {
     io.emit("onlineUsers", { onlineUsers, lastSeen });
   });
 
-  // 🔥 NEW: Peer ID Register karne ka event (Jo call.js emit karta hai)
+  // 🔥 REFRESH FIX: Database se purani chats nikal kar bhejna
+  socket.on("fetchOldMessages", async (data) => {
+    try {
+      // Wo messages uthao jo ya to unseen hain, ya fir seen hoke 10 min nahi hue
+      const msgs = await Message.find({
+        $or: [
+          { seen: false },
+          { seen: true, seenAt: { $gt: new Date(Date.now() - 10 * 60 * 1000) } }
+        ]
+      }).sort({ createdAt: 1 });
+      
+      socket.emit("loadMessages", msgs);
+    } catch (err) {
+      console.log("Fetch Error:", err);
+    }
+  });
+
   socket.on("registerPeer", (data) => {
     if (data.username) {
       userPeerMap[data.username.toLowerCase()] = data.peerId;
@@ -71,8 +88,12 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("sendMessage", async (data) => {
-    const msg = await Message.create(data);
-    io.emit("receiveMessage", msg);
+    try {
+      const msg = await Message.create(data);
+      io.emit("receiveMessage", msg);
+    } catch (err) {
+      console.log("Save Error:", err);
+    }
   });
 
   socket.on("typing", () => {
@@ -90,28 +111,24 @@ io.on("connection", async (socket) => {
     msg.seen = true;
     msg.seenAt = new Date();
     await msg.save();
-    io.emit("messageSeenUpdate", { messageId: data.messageId, time: msg.seenAt.toLocaleTimeString() });
+    io.emit("messageSeenUpdate", { 
+      messageId: data.messageId, 
+      time: msg.seenAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+    });
   });
 
-  // ================= CALL SYSTEM (FIXED WITH PEER ID) =================
-
+  // ================= CALL SYSTEM =================
   socket.on("audioCall", (data) => {
     const targetSocket = userSocketMap[data.to];
     if (targetSocket) {
-      io.to(targetSocket).emit("audioCallIncoming", {
-        from: data.from,
-        peerId: data.peerId // 🔥 FIXED: Peer ID bhej rahe hain
-      });
+      io.to(targetSocket).emit("audioCallIncoming", { from: data.from, peerId: data.peerId });
     }
   });
 
   socket.on("videoCall", (data) => {
     const targetSocket = userSocketMap[data.to];
     if (targetSocket) {
-      io.to(targetSocket).emit("videoCallIncoming", {
-        from: data.from,
-        peerId: data.peerId // 🔥 FIXED: Peer ID bhej rahe hain
-      });
+      io.to(targetSocket).emit("videoCallIncoming", { from: data.from, peerId: data.peerId });
     }
   });
 
@@ -120,21 +137,29 @@ io.on("connection", async (socket) => {
     const name = socket.username;
     delete onlineUsers[name];
     delete userSocketMap[name];
-    delete userPeerMap[name]; // 🔥 Clean up peer ID
+    delete userPeerMap[name]; 
     lastSeen[name] = Date.now();
     io.emit("onlineUsers", { onlineUsers, lastSeen });
   });
 });
 
-// ================= AUTO DELETE =================
+// ================= AUTO DELETE (10 MIN SEEN) =================
 setInterval(async () => {
-  const tenMinAgo = new Date(Date.now() - 10 * 60 * 1000);
-  const msgs = await Message.find({ seen: true, seenAt: { $lte: tenMinAgo } });
-  for (let msg of msgs) {
-    await Message.deleteOne({ id: msg.id });
-    io.emit("deleteMessage", msg.id);
+  try {
+    const tenMinAgo = new Date(Date.now() - 10 * 60 * 1000);
+    const expiredMsgs = await Message.find({ seen: true, seenAt: { $lte: tenMinAgo } });
+    
+    if (expiredMsgs.length > 0) {
+      for (let msg of expiredMsgs) {
+        await Message.deleteOne({ _id: msg._id });
+        io.emit("deleteMessage", msg.id);
+      }
+      console.log(`${expiredMsgs.length} messages deleted automatically.`);
+    }
+  } catch (err) {
+    console.log("Cleanup Error:", err);
   }
-}, 60 * 1000);
+}, 30000); // Har 30 second mein check karega
 
 server.listen(PORT, () => {
   console.log(`Server Running on port: ${PORT}`);

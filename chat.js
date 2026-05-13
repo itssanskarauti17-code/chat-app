@@ -23,17 +23,18 @@ const typingDiv = document.getElementById("typing-area");
 
 // ================= INIT =================
 console.log("chat.js loaded");
-
 partnerName.innerText = me === "alex" ? "Kitty" : "Alex";
 
-// ================= CONNECT =================
+// ================= CONNECT & REFRESH FIX =================
 socket.on("connect", () => {
     socket.emit("userOnline", me);
+    
+    // REFRESH FIX: Connection bante hi server se is room ki purani chats maango
+    socket.emit("fetchOldMessages", { sender: me, receiver: otherUser });
 });
 
 // ================= ONLINE STATUS =================
 socket.on("onlineUsers", (data) => {
-
     const onlineUsers = data.onlineUsers || {};
     const lastSeen = data.lastSeen || {};
 
@@ -44,7 +45,6 @@ socket.on("onlineUsers", (data) => {
     }
 
     const last = lastSeen[otherUser];
-
     if (!last) {
         statusText.innerText = "offline";
         statusText.style.color = "gray";
@@ -52,7 +52,6 @@ socket.on("onlineUsers", (data) => {
     }
 
     const diffMin = Math.floor((Date.now() - last) / 60000);
-
     if (diffMin < 1) statusText.innerText = "last seen just now";
     else if (diffMin < 60) statusText.innerText = `last seen ${diffMin} min ago`;
     else statusText.innerText = `last seen ${Math.floor(diffMin / 60)} hr ago`;
@@ -62,12 +61,12 @@ socket.on("onlineUsers", (data) => {
 
 // ================= SEND MESSAGE =================
 function sendMessage() {
-
     if (!input.value.trim()) return;
 
     socket.emit("sendMessage", {
         id: Date.now().toString(),
         sender: me,
+        receiver: otherUser, // Receiver field zaroori hai database filtering ke liye
         text: input.value
     });
 
@@ -75,42 +74,33 @@ function sendMessage() {
 }
 
 sendBtn.addEventListener("click", sendMessage);
-
 input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") sendMessage();
 });
 
-// ================= LOAD + RECEIVE =================
+// ================= LOAD OLD MESSAGES (REFRESH FIX) =================
 socket.on("loadMessages", (msgs) => {
-    chatBox.innerHTML = "";
-    msgs.forEach(renderMessage);
+    chatBox.innerHTML = ""; // Pehle purana view clear karo
+    msgs.forEach(renderMessage); // Database se aayi chats line se dikhao
 });
 
 socket.on("receiveMessage", renderMessage);
 
 // ================= RENDER MESSAGE =================
 function renderMessage(data) {
-
     const div = document.createElement("div");
     div.classList.add("message");
     div.classList.add(data.sender === me ? "sent" : "received");
     div.id = data.id;
 
     let content = "";
-
-    // ================= FILE FIX =================
     if (data.file) {
-
-        const isVideo =
-            data.file.includes("video") ||
-            data.file.endsWith(".mp4");
-
+        const isVideo = data.file.includes("video") || data.file.endsWith(".mp4");
         if (isVideo) {
             content = `<video src="${data.file}" controls class="chat-video"></video>`;
         } else {
             content = `<img src="${data.file}" class="chat-image" />`;
         }
-
     } else {
         content = `<div>${data.text || ""}</div>`;
     }
@@ -123,18 +113,16 @@ function renderMessage(data) {
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
 
+    // SEEN LOGIC: Agar message receive hua hai, toh server ko 'seen' update bhejo
     if (data.sender !== me) {
         setTimeout(() => {
-            socket.emit("messageSeen", {
-                messageId: data.id
-            });
+            socket.emit("messageSeen", { messageId: data.id });
         }, 200);
     }
 }
 
 // ================= SEEN UPDATE =================
 socket.on("messageSeenUpdate", (data) => {
-
     const el = document.getElementById(`seen-${data.messageId}`);
     if (!el) return;
 
@@ -143,7 +131,8 @@ socket.on("messageSeenUpdate", (data) => {
     el.style.color = "#4fc3f7";
 });
 
-// ================= DELETE =================
+// ================= DELETE (10-MIN LOGIC) =================
+// Jab server backend se purani seen chats delete karega, ye event screen se hatayega
 socket.on("deleteMessage", (id) => {
     const msg = document.getElementById(id);
     if (msg) msg.remove();
@@ -151,19 +140,14 @@ socket.on("deleteMessage", (id) => {
 
 // ================= TYPING =================
 let typingTimeout;
-
 input.addEventListener("input", () => {
     socket.emit("typing", me);
 });
 
 socket.on("typing", (u) => {
-
     if (!u || u === me) return;
-
     typingDiv.innerText = `${u} is typing...`;
-
     clearTimeout(typingTimeout);
-
     typingTimeout = setTimeout(() => {
         typingDiv.innerText = "";
     }, 1200);
@@ -177,61 +161,57 @@ emojiBtn.addEventListener("click", () => {
 // ================= CALL BUTTONS =================
 if (audioCallBtn) {
     audioCallBtn.addEventListener("click", () => {
-        socket.emit("audioCall", { from: me, to: otherUser });
-        showCallPopup("Audio call ringing...");
+        // Agar call.js load hai toh uska logic, nahi toh default popup
+        if (typeof initiateCall === 'function') initiateCall('audio');
+        else {
+            socket.emit("audioCall", { from: me, to: otherUser });
+            showCallPopup("Audio call ringing...");
+        }
     });
 }
 
 if (videoCallBtn) {
     videoCallBtn.addEventListener("click", () => {
-        socket.emit("videoCall", { from: me, to: otherUser });
-        showCallPopup("Video call ringing...");
+        if (typeof initiateCall === 'function') initiateCall('video');
+        else {
+            socket.emit("videoCall", { from: me, to: otherUser });
+            showCallPopup("Video call ringing...");
+        }
     });
 }
 
-// ================= FILE UPLOAD (MOBILE FIX) =================
+// ================= FILE UPLOAD =================
 fileInput.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    // Mobile par badi files allow karne ke liye
-    if (file.size > 10 * 1024 * 1024) { // 10MB Limit
+    if (file.size > 10 * 1024 * 1024) {
         alert("File bahut badi hai! 10MB se choti photo bhejein.");
         return;
     }
 
     const reader = new FileReader();
-
-    // Loading indicator dikhane ke liye (optional)
     typingDiv.innerText = "Sending photo...";
-
     reader.onload = (event) => {
         try {
             socket.emit("sendMessage", {
                 id: Date.now().toString(),
                 sender: me,
+                receiver: otherUser,
                 text: "",
-                file: event.target.result // Base64 Data
+                file: event.target.result
             });
             typingDiv.innerText = "";
-            fileInput.value = ""; // Input reset taaki same photo dubara ja sake
+            fileInput.value = "";
         } catch (err) {
             console.error("Socket error:", err);
             alert("Connection error! Photo nahi gayi.");
         }
     };
-
-    reader.onerror = () => {
-        alert("Mobile gallery se photo read nahi ho payi.");
-    };
-
     reader.readAsDataURL(file);
 });
 
-
 // ================= CALL POPUP =================
 function showCallPopup(text) {
-
     const oldPopup = document.querySelector(".call-popup");
     if (oldPopup) oldPopup.remove();
 
@@ -240,11 +220,9 @@ function showCallPopup(text) {
     popup.innerText = text;
 
     document.body.appendChild(popup);
-
     setTimeout(() => popup.remove(), 3000);
 }
 
-// ================= INCOMING CALLS =================
 socket.on("videoCallIncoming", (data) => {
     showCallPopup("Incoming Video Call 📞 from " + data.from);
 });
